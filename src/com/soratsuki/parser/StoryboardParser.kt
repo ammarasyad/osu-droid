@@ -14,17 +14,21 @@ import com.soratsuki.commands.StoryboardRotationCommand
 import com.soratsuki.commands.StoryboardScaleCommand
 import com.soratsuki.commands.StoryboardXCommand
 import com.soratsuki.commands.StoryboardYCommand
-import com.soratsuki.datatypes.Depth
 import com.soratsuki.datatypes.EaseElasticOutHalf
 import com.soratsuki.datatypes.EaseElasticOutQuarter
-import com.soratsuki.datatypes.EasePow10Out
 import com.soratsuki.datatypes.ElementType
-import com.soratsuki.datatypes.ElementType.*
+import com.soratsuki.datatypes.ElementType.Animation
+import com.soratsuki.datatypes.ElementType.Background
+import com.soratsuki.datatypes.ElementType.Break
+import com.soratsuki.datatypes.ElementType.Colour
+import com.soratsuki.datatypes.ElementType.Sample
+import com.soratsuki.datatypes.ElementType.Sprite
+import com.soratsuki.datatypes.ElementType.Video
 import com.soratsuki.datatypes.LoopType
 import com.soratsuki.layers.StoryboardLayer
-import com.soratsuki.sprites.StoryboardSprite
 import com.soratsuki.sprites.StoryboardAnimationSprite
 import com.soratsuki.sprites.StoryboardBasicSprite
+import com.soratsuki.sprites.StoryboardSprite
 import com.soratsuki.texture.StoryboardTexturePool
 import org.andengine.util.color.Color
 import org.andengine.util.debug.Debug
@@ -90,19 +94,12 @@ class StoryboardParser(var storyboard: Storyboard?, private val texturePool: Sto
                 when {
                     isVariableSection -> handleVariables(line)
                     isEventSection -> handleEvents(line)
-//                    else -> Debug.w("Unknown section: $line")
                 }
 
                 if (trim.startsWith('[') && trim.endsWith(']')) {
                     isVariableSection = trim == "[Variables]"
                     isEventSection = trim == "[Events]"
                 }
-
-//                when (trim) {
-//                    "Variables" -> handleVariables(line)
-//                    "Events" -> handleEvents(line)
-//                    else -> Debug.w("Unknown section: $line")
-//                }
 
                 line = reader.readLine()
             }
@@ -152,10 +149,6 @@ class StoryboardParser(var storyboard: Storyboard?, private val texturePool: Sto
                         storyboard?.addSampleCommand(time, layer, path, volume)
                     }
                     Background -> storyboard?.backgroundFile = cleanFilename(split[2])
-//                    Background -> {
-//                        val backgroundFile = cleanFilename(split[2])
-//                        storyboard?.addElement(StoryboardBasicSprite(StoryboardLayer("bg", Depth.BACKGROUND), Anchor.Center, backgroundFile, 320f, 240f, texturePool.getOrAdd(backgroundFile).texture))
-//                    }
                     /*Background, */Colour, Video, Break -> return // Not a storyboard event
                 }
             } else {
