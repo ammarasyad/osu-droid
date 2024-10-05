@@ -75,11 +75,6 @@ class TextureQuad(textureInfo: StoryboardTexturePool.TextureInfo) {
         val top    = -size.y * anchor.y() * (scale?.y ?: 1f)
         val bottom = (size.y + top) * (scale?.y ?: 1f)
 
-//        val left = 0f * (scale?.x ?: 1f)
-//        val right = size.x * (scale?.x ?: 1f)
-//        val top = 0f * (scale?.y ?: 1f)
-//        val bottom = size.y * (scale?.y ?: 1f)
-
         val color = accentColor?.apply {
             val alphaValue = this@TextureQuad.alpha
             Color(red, green, blue, alpha * alphaValue)

@@ -17,9 +17,9 @@ class StoryboardBatchVertexBufferObject(
     pVertexBufferObjectManager: VertexBufferObjectManager?,
     pCapacity: Int,
     pVertexBufferObjectAttributes: VertexBufferObjectAttributes?
-) : HighPerformanceSpriteBatchVertexBufferObject(pVertexBufferObjectManager, pCapacity, DrawType.STATIC, true, pVertexBufferObjectAttributes), IVertexBufferObject {
+) : HighPerformanceSpriteBatchVertexBufferObject(pVertexBufferObjectManager, pCapacity, DrawType.DYNAMIC, true, pVertexBufferObjectAttributes), IVertexBufferObject {
     private var floatBuffer = mByteBuffer.asFloatBuffer()
-    // 2 floats for position, 4 floats for color, 2 floats for texture coordinates
+    // 2 floats for position, 1 packed float for color, 2 floats for texture coordinates
     private var vertexBuffer = FloatArray(pCapacity)
     private var indexBuffer = ByteBuffer.allocateDirect(pCapacity * 6 * Short.SIZE_BYTES).order(ByteOrder.nativeOrder())
 
@@ -36,17 +36,6 @@ class StoryboardBatchVertexBufferObject(
                 .putShort((i * 4 + 2).toShort())
         }
         indexBuffer.position(0)
-//        val indexArray = ShortArray(pCapacity * 6)
-//        for (i in 0 until pCapacity) {
-//            indexArray[i * 6 + 0] = (i * 4 + 0).toShort()
-//            indexArray[i * 6 + 1] = (i * 4 + 1).toShort()
-//            indexArray[i * 6 + 2] = (i * 4 + 2).toShort()
-//            indexArray[i * 6 + 3] = (i * 4 + 1).toShort()
-//            indexArray[i * 6 + 4] = (i * 4 + 3).toShort()
-//            indexArray[i * 6 + 5] = (i * 4 + 2).toShort()
-//        }
-//        indexBuffer.put(indexArray)
-//        indexBuffer.position(0)
     }
 
     fun add(textureQuad: TextureQuad) {
@@ -74,7 +63,6 @@ class StoryboardBatchVertexBufferObject(
         }
     }
 
-    override fun getBufferData() = vertexBuffer
     override fun onBufferData() {
         floatBuffer.position(0)
         floatBuffer.put(vertexBuffer)
@@ -84,12 +72,7 @@ class StoryboardBatchVertexBufferObject(
         GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexBuffer.capacity(), indexBuffer, mUsage)
     }
 
-//    private var previousViewport = intArrayOf(0, 0, 0, 0)
-
     override fun draw(pPrimitiveType: Int, pCount: Int) {
-//        GLES20.glGetIntegerv(GLES20.GL_VIEWPORT, previousViewport, 0)
-//        GLES20.glViewport(0, 0, 640, 480)
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, mCapacity / TextureQuad.SIZE_PER_QUAD * 6, GLES20.GL_UNSIGNED_SHORT, 0)
-//        GLES20.glViewport(previousViewport[0], previousViewport[1], previousViewport[2], previousViewport[3])
     }
 }

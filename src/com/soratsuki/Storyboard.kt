@@ -11,14 +11,14 @@ import com.soratsuki.parser.StoryboardParser
 import com.soratsuki.sprites.StoryboardBasicSprite
 import com.soratsuki.sprites.StoryboardSprite
 import com.soratsuki.texture.StoryboardTexturePool
-import org.andengine.entity.sprite.batch.DynamicSpriteBatch
+import org.andengine.entity.sprite.batch.SpriteBatch
 import org.andengine.util.debug.Debug
 import ru.nsu.ccfit.zuev.osu.GlobalManager.getInstance
 import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
-class Storyboard(private val width: Float, private val height: Float) : DynamicSpriteBatch(
+class Storyboard(private val width: Float, private val height: Float) : SpriteBatch(
     BlankTexture(),
     DEFAULT_CAPACITY,
     StoryboardBatchVertexBufferObject(
@@ -42,8 +42,8 @@ class Storyboard(private val width: Float, private val height: Float) : DynamicS
     var backgroundFile = ""
 
     init {
-//        val scale = max(640 / width, 480 / height)
-//        setScale(scale)
+        val scale = max(640 / width, 480 / height)
+        setScale(scale)
     }
 
     fun draw(textureQuad: TextureQuad) {
@@ -70,7 +70,7 @@ class Storyboard(private val width: Float, private val height: Float) : DynamicS
             val backgroundLayer = StoryboardLayer("Background", Depth.BACKGROUND)
             addElement(StoryboardBasicSprite(backgroundLayer, Anchor.TopLeft, backgroundFile, 0f, 0f, texturePool!!.getOrAdd(backgroundFile)).apply {
                 textureQuad.enableScale()
-                textureQuad.scale!!.set(min(640f / textureQuad.size.x, 480f / textureQuad.size.y))
+                textureQuad.scale!!.set(min(width / textureQuad.size.x, height / textureQuad.size.y))
             })
         }
 
@@ -113,8 +113,6 @@ class Storyboard(private val width: Float, private val height: Float) : DynamicS
         for (i in 0..<Depth.entries.size) {
             val layer = layers[i] ?: continue
 
-//            sampleEvents.fastForEach { it.update(time) }
-//            layer.update(time)
             layer.sprites.fastForEach { sprite ->
                 sprite.update(updateTime)
                 if (sprite.shouldDraw(updateTime) || sprite.spriteFilename == backgroundFile) {
@@ -124,16 +122,15 @@ class Storyboard(private val width: Float, private val height: Float) : DynamicS
         }
 
         submit()
-//        begin()
     }
 
     fun setBrightness(brightness: Float) {
-//        layers.fastForEach { layer ->
-//            layer?.sprites?.fastForEach { sprite ->
-//                sprite.textureQuad.enableColor()
-//                sprite.textureQuad.accentColor!!.set(1f, 1f, 1f, brightness)
-//            }
-//        }
+        layers.fastForEach { layer ->
+            layer?.sprites?.fastForEach { sprite ->
+                sprite.textureQuad.enableColor()
+                sprite.textureQuad.accentColor!!.set(brightness, brightness, brightness, 1f)
+            }
+        }
     }
 
     fun release() {
@@ -154,12 +151,10 @@ class Storyboard(private val width: Float, private val height: Float) : DynamicS
         // TODO: Optimize this
         if (layers[sprite.layer.depth.value]!!.sprites.contains(sprite)) {
             val index = layers[sprite.layer.depth.value]!!.sprites.indexOf(sprite)
-//            layers[sprite.layer.depth.value]!!.sprites[index].addCommands(sprite.commandGroup)
             layers[sprite.layer.depth.value]!!.sprites[index] = sprite
         } else {
             layers[sprite.layer.depth.value]!!.sprites.add(sprite)
         }
-//        layers[sprite.layer.depth.value]?.elements?.add(sprite)
     }
 
     fun addSampleCommand(startTime: Double, layer: StoryboardLayer, filePath: String, volume: Double) {
@@ -182,11 +177,4 @@ class Storyboard(private val width: Float, private val height: Float) : DynamicS
         release()
         super.finalize()
     }
-
-    override fun onUpdateSpriteBatch() = mSpriteBatchVertexBufferObject.bufferDataOffset >= mCapacity * TextureQuad.SIZE_PER_QUAD
-
-//    override fun onSubmit() {
-//        super.onSubmit()
-//        mSpriteBatchVertexBufferObject.draw(0, 0)
-//    }
 }

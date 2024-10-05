@@ -109,10 +109,6 @@ class StoryboardTexturePool(private val directory: File) {
         }
 
         for (info in map.values) {
-//            info.u1 /= maxAtlasWidth
-//            info.u2 /= maxAtlasWidth
-//            info.v1 /= maxAtlasHeight
-//            info.v2 /= maxAtlasHeight
             with(info) {
                 u1 /= maxAtlasWidth
                 u2 = (u2 - 1) / maxAtlasWidth
@@ -157,15 +153,11 @@ class StoryboardTexturePool(private val directory: File) {
         }
     data class AtlasTexCoordsInfo(var u1: Float, var u2: Float, var v1: Float, var v2: Float)
     data class TextureInfo(
-//        val texture: TextureRegion,
         val name: String,
         val u1: Float,
         val u2: Float,
         val v1: Float,
         val v2: Float,
         val size: Vec2Int
-//        val file: String,
-//        val size: Vec2Int,
-//        val pos: Vec2Int,
     )
 }
