@@ -26,8 +26,11 @@ public class TextureHelper {
         try {
             File tmp = File.createTempFile("bmp_cache" + tmpFileId, ".png");
             tmp.deleteOnExit();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(tmp));
-            return tmp;
+
+            try (FileOutputStream fos = new FileOutputStream(tmp)) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                return tmp;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -6,8 +6,6 @@ import android.os.SystemClock;
 
 import com.edlplan.ext.EdExtensionHelper;
 import com.edlplan.framework.math.FMath;
-import com.edlplan.framework.support.ProxySprite;
-import com.edlplan.framework.support.osb.StoryboardSprite;
 import com.edlplan.framework.utils.functionality.SmartIterator;
 import com.edlplan.osu.support.timing.TimingPoints;
 import com.edlplan.osu.support.timing.controlpoint.ControlPoints;
@@ -31,6 +29,8 @@ import com.rian.osu.difficulty.attributes.StandardDifficultyAttributes;
 import com.rian.osu.difficulty.attributes.TimedDifficultyAttributes;
 import com.rian.osu.difficulty.calculator.DifficultyCalculationParameters;
 import com.rian.osu.beatmap.hitobject.HitObjectUtils;
+import com.soratsuki.Storyboard;
+
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -182,9 +182,10 @@ public class GameScene implements IUpdateHandler, GameObjectListener,
     private SliderPath[] sliderPaths = null;
     private int sliderIndex = 0;
 
-    private StoryboardSprite storyboardSprite;
+//    private StoryboardSprite storyboardSprite;
+    private Storyboard storyboardSprite;
 
-    private ProxySprite storyboardOverlayProxy;
+//    private ProxySprite storyboardOverlayProxy;
 
     private DifficultyHelper difficultyHelper = DifficultyHelper.StdDifficulty;
 
@@ -300,7 +301,7 @@ public class GameScene implements IUpdateHandler, GameObjectListener,
         }
 
         // storyboard sprite will draw background and dimRectangle if needed, so skip here
-        if (storyboardSprite == null || !storyboardSprite.isStoryboardAvailable()) {
+        if (storyboardSprite == null) {
             if (bgSprite == null && beatmap.events.backgroundFilename != null) {
                 var tex = Config.isSafeBeatmapBg() ?
                         ResourceManager.getInstance().getTexture("menu-background")
@@ -704,10 +705,8 @@ public class GameScene implements IUpdateHandler, GameObjectListener,
 
         scene = new Scene();
         if (Config.isEnableStoryboard()) {
-            if (storyboardSprite == null || storyboardOverlayProxy == null) {
-                storyboardSprite = new StoryboardSprite(Config.getRES_WIDTH(), Config.getRES_HEIGHT());
-                storyboardOverlayProxy = new ProxySprite(Config.getRES_WIDTH(), Config.getRES_HEIGHT());
-                storyboardSprite.setOverlayDrawProxy(storyboardOverlayProxy);
+            if (storyboardSprite == null) {
+                storyboardSprite = new Storyboard(Config.getRES_WIDTH(), Config.getRES_HEIGHT());
                 scene.attachChild(storyboardSprite);
             }
             storyboardSprite.detachSelf();
@@ -718,10 +717,10 @@ public class GameScene implements IUpdateHandler, GameObjectListener,
         fgScene = new Scene();
         scene.attachChild(bgScene);
         scene.attachChild(mgScene);
-        if (storyboardOverlayProxy != null) {
-            storyboardOverlayProxy.detachSelf();
-            scene.attachChild(storyboardOverlayProxy);
-        }
+//        if (storyboardOverlayProxy != null) {
+//            storyboardOverlayProxy.detachSelf();
+//            scene.attachChild(storyboardOverlayProxy);
+//        }
         scene.attachChild(fgScene);
         scene.setBackground(new Background(0, 0, 0));
         bgScene.setBackgroundEnabled(false);
@@ -1201,7 +1200,7 @@ public class GameScene implements IUpdateHandler, GameObjectListener,
 
         if (Config.isEnableStoryboard()) {
             if (storyboardSprite != null) {
-                storyboardSprite.updateTime(secPassed * 1000);
+                storyboardSprite.update(secPassed * 1000);
             }
         }
 
@@ -1911,9 +1910,7 @@ public class GameScene implements IUpdateHandler, GameObjectListener,
 
         if (storyboardSprite != null) {
             storyboardSprite.detachSelf();
-            storyboardOverlayProxy.detachSelf();
-            storyboardSprite.releaseStoryboard();
-            storyboardOverlayProxy.setDrawProxy(null);
+            storyboardSprite.release();
             storyboardSprite = null;
         }
 

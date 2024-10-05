@@ -1,0 +1,20 @@
+package com.soratsuki.commands
+
+import com.soratsuki.drawables.TextureQuad
+import org.andengine.util.modifier.ease.IEaseFunction
+
+class StoryboardRotationCommand(
+    easeFunction: IEaseFunction,
+    startTime: Float,
+    endTime: Float,
+    startValue: Float,
+    endValue: Float
+) : StoryboardCommand<Float>(easeFunction, startTime, endTime, startValue, endValue) {
+    override fun applyInitialValue(textureQuad: TextureQuad) {
+        textureQuad.rotation = startValue
+    }
+
+    override fun applyValue(textureQuad: TextureQuad, percentage: Float) {
+        textureQuad.rotation = startValue * (1 - percentage) + endValue * percentage
+    }
+}
